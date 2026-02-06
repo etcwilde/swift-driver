@@ -26,7 +26,8 @@ extension WebAssemblyToolchain {
     shouldUseInputFileList: Bool,
     lto: LTOKind?,
     sanitizers: Set<Sanitizer>,
-    targetInfo: FrontendTargetInfo
+    targetInfo: FrontendTargetInfo,
+    sysroot: TextualVirtualPath?
   ) throws -> ResolvedTool {
     let targetTriple = targetInfo.target.triple
     switch linkerOutputType {

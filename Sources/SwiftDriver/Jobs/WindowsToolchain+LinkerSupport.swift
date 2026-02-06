@@ -37,7 +37,8 @@ extension WindowsToolchain {
                                             shouldUseInputFileList: Bool,
                                             lto: LTOKind?,
                                             sanitizers: Set<Sanitizer>,
-                                            targetInfo: FrontendTargetInfo)
+                                            targetInfo: FrontendTargetInfo,
+                                            sysroot: TextualVirtualPath?)
     throws -> ResolvedTool {
     // Check to see whether we need to use lld as the linker.
     let bForceLLD: Bool = {

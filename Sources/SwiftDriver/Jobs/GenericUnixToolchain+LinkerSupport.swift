@@ -42,7 +42,8 @@ extension GenericUnixToolchain {
     shouldUseInputFileList: Bool,
     lto: LTOKind?,
     sanitizers: Set<Sanitizer>,
-    targetInfo: FrontendTargetInfo
+    targetInfo: FrontendTargetInfo,
+    sysroot: TextualVirtualPath?
   ) throws -> ResolvedTool {
 #if os(Windows)
     commandLine.appendFlag("--rsp-quoting=windows")

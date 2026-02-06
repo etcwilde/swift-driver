@@ -466,9 +466,9 @@ public final class DarwinToolchain: Toolchain {
 
     // Pass explicit -sysroot to clang-importer if provided
     // This allows testing against different C/C++ system libraries
-    if let sysroot = driver.parsedOptions.getLastArgument(.sysroot)?.asSingle {
+    if let sysroot = driver.sysroot {
       commandLine.appendFlag("-sysroot")
-      try commandLine.appendPath(VirtualPath(path: sysroot))
+      commandLine.appendPath(VirtualPath.lookup(sysroot.path))
     }
 
     guard let sdkPath, let sdkInfo else { return }

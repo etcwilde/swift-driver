@@ -73,7 +73,8 @@ extension Driver {
       shouldUseInputFileList: shouldUseInputFileList,
       lto: lto,
       sanitizers: enabledSanitizers,
-      targetInfo: frontendTargetInfo
+      targetInfo: frontendTargetInfo,
+      sysroot: sysroot
     )
 
     if parsedOptions.hasArgument(.explicitAutoLinking) {

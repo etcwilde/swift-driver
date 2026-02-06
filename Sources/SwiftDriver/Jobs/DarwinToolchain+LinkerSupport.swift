@@ -59,7 +59,8 @@ extension DarwinToolchain {
     shouldUseInputFileList: Bool,
     lto: LTOKind?,
     sanitizers: Set<Sanitizer>,
-    targetInfo: FrontendTargetInfo
+    targetInfo: FrontendTargetInfo,
+    sysroot: TextualVirtualPath?
   ) throws -> ResolvedTool {
     // Set up for linking.
     let linkerTool: Tool
@@ -77,7 +78,8 @@ extension DarwinToolchain {
                                 commandLine: &commandLine,
                                 sanitizers: sanitizers,
                                 linkerOutputType: linkerOutputType,
-                                lto: lto)
+                                lto: lto,
+                                sysroot: sysroot)
 
     case .executable:
       linkerTool = .dynamicLinker
@@ -90,7 +92,8 @@ extension DarwinToolchain {
                                 commandLine: &commandLine,
                                 sanitizers: sanitizers,
                                 linkerOutputType: linkerOutputType,
-                                lto: lto)
+                                lto: lto,
+                                sysroot: sysroot)
 
     case .staticLibrary:
       linkerTool = .staticLinker(lto)
@@ -162,7 +165,8 @@ extension DarwinToolchain {
                                      commandLine: inout [Job.ArgTemplate],
                                      sanitizers: Set<Sanitizer>,
                                      linkerOutputType: LinkOutputType,
-                                     lto: LTOKind?) throws {
+                                     lto: LTOKind?,
+                                     sysroot: TextualVirtualPath?) throws {
     if let lto = lto {
       switch lto {
       case .llvmFull:
@@ -221,12 +225,9 @@ extension DarwinToolchain {
     // Add the sysroot: explicit -sysroot takes precedence, then SDK path
     // This allows using a different sysroot for C/C++ libraries while using
     // a different SDK for Swift runtime libraries
-    if let sysroot = parsedOptions.getLastArgument(.sysroot)?.asSingle {
+    if let sysrootPath = sysroot?.path ?? targetInfo.sdkPath?.path {
       commandLine.appendFlag("--sysroot")
-      try commandLine.appendPath(VirtualPath(path: sysroot))
-    } else if let sdkPath = targetInfo.sdkPath?.path {
-      commandLine.appendFlag("--sysroot")
-      commandLine.appendPath(VirtualPath.lookup(sdkPath))
+      commandLine.appendPath(VirtualPath.lookup(sysrootPath))
     }
 
     // -link-objc-runtime also implies -fobjc-link-runtime

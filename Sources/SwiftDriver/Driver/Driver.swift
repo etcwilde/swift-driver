@@ -186,6 +186,9 @@ public struct Driver {
   /// Information about the target, as reported by the Swift frontend.
   @_spi(Testing) public let frontendTargetInfo: FrontendTargetInfo
 
+  /// The explicit sysroot path handle, if provided via -sysroot flag.
+  @_spi(Testing) public let sysroot: TextualVirtualPath?
+
   /// The target triple.
   @_spi(Testing) public var targetTriple: Triple { frontendTargetInfo.target.triple }
 
@@ -991,6 +994,13 @@ public struct Driver {
                                                          useStaticResourceDir: self.useStaticResourceDir,
                                                          workingDirectory: self.workingDirectory,
                                                          compilerExecutableDir: compilerExecutableDir)
+
+    if let sysroot = try? parsedOptions.getLastArgument(.sysroot)?.asSingle,
+      let handle = try? VirtualPath.intern(path: sysroot) {
+      self.sysroot = TextualVirtualPath(path: handle)
+    } else {
+      self.sysroot = nil
+    }
 
     // Classify and collect all of the input files.
     let inputFiles = try Self.collectInputFiles(&self.parsedOptions, diagnosticsEngine: diagnosticsEngine, fileSystem: self.fileSystem)
